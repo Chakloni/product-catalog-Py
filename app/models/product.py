@@ -1,23 +1,26 @@
 import time
+from typing import Optional, List, Dict
 from pydantic import BaseModel, Field
-from typing import Optional
 
 
 class Product(BaseModel):
     id: Optional[str] = Field(alias="_id")
-    sku: str = Field(..., alias="sku")
+
+    sku: str
     name: str
-    category: Optional[str] = None
     description: Optional[str] = None
-    price_cents: Optional[int] = Field(None, alias="price_cents")
+    category: Optional[str] = None
+    price_cents: Optional[int] = None
     currency: str
     stock: int
 
-    images: Optional[str] = None
+    images: Optional[List[str]] = None  # ✅ supports list of image URLs
+    attributes: Optional[Dict[str, str]] = None  # ✅ supports attributes like brand, color, etc.
+
     is_active: bool = True
     is_deleted: bool = False
-    created_at: Optional[float] = Field(default_factory=time.time, alias="created_at")
-    updated_at: Optional[float] = Field(default_factory=time.time, alias="updated_at")
+    created_at: Optional[float] = Field(default_factory=time.time)
+    updated_at: Optional[float] = Field(default_factory=time.time)
 
     class Config:
         populate_by_name = True
