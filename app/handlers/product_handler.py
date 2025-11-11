@@ -1,3 +1,5 @@
+import time
+from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 from app.models.product import Product
 from app.repositories.product_repository import ProductRepository
@@ -28,10 +30,10 @@ def get_product(id: str):
     return product
 
 @router.patch("/{id}")
-def update_product(id: str, product: dict):
-    if not repo.update(id, product):
-        raise HTTPException(status_code=404, detail="Product not found")
-    return {"updated": True}
+def update(self, id: str, product: dict):
+    product["updated_At"] = time.time()  # ✅ update timestamp
+    result = self.collection.update_one({"_id": ObjectId(id)}, {"$set": product})
+    return result.modified_count > 0
 
 @router.delete("/{id}")
 def delete_product(id: str):
