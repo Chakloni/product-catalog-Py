@@ -4,12 +4,17 @@ from app.core.database import collection
 from bson import ObjectId
 
 class ProductRepository:
+    def __init__(self, collection):
+        self.collection = collection
+
     def create(self, product: Product):
         res = collection.insert_one(product.model_dump(by_alias=True, exclude={"id"}))
         return str(res.inserted_id)
 
-    def list(self) -> List[Product]:
-        products = list(collection.find())
+    def list(self):
+        products = list(self.collection.find())
+        for p in products:
+            p["_id"] = str(p["_id"]) 
         return [Product(**p) for p in products]
 
     def get(self, id: str) -> Optional[Product]:
